@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simulação FGTS | Gabriel Menezes</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to right, #e0f7fa, #ffffff);
+      color: #333;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    .dark-mode {
+      background: #121212;
+      color: #f0f0f0;
+    }
+
+    .toggle-dark {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #007b5e;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      z-index: 1000;
+    }
+
+    header {
+      background: url('./photo_2025-08-30_18-27-00.jpg') center/cover no-repeat;
+      color: white;
+      text-align: center;
+      padding: 5rem 1rem;
+      position: relative;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    .logo {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+    }
+
+    .logo img {
+      height: 70px;
+    }
+
+    header h1 {
+      font-size: 3rem;
+      margin-bottom: 0.5rem;
+      text-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+    }
+
+    header p {
+      font-size: 1.4rem;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.4);
+    }
+
+    section {
+      padding: 3rem 2rem;
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    h2 {
+      color: #007b5e;
+      margin-bottom: 1.5rem;
+      font-size: 2rem;
+    }
+
+    p {
+      font-size: 1.2rem;
+      line-height: 1.8;
+    }
+
+    img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 12px;
+      margin: 1.5rem 0;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .whatsapp-btn {
+      display: inline-block;
+      background: linear-gradient(to right, #25d366, #1ebe5d);
+      color: white;
+      padding: 1rem 2rem;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: transform 0.3s ease;
+      text-align: center;
+      font-size: 1.2rem;
+    }
+
+    .whatsapp-btn:hover {
+      transform: scale(1.05);
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    li {
+      margin: 0.75rem 0;
+      font-size: 1.2rem;
+    }
+
+    .cards {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      justify-content: center;
+      margin-top: 2rem;
+    }
+
+    .card {
+      background: #e3f2fd;
+      padding: 2rem;
+      border-radius: 12px;
+      flex: 1 1 280px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+    }
+
+    .carousel-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      overflow: hidden;
+      margin-top: 2rem;
+    }
+
+    .carousel {
+      display: flex;
+      transition: transform 0.5s ease;
+      width: 100%;
+      max-width: 800px;
+      overflow: hidden;
+    }
+
+    .carousel-item {
+      min-width: 300px;
+      margin: 0 1rem;
+      text-align: center;
+    }
+
+    .carousel-item img {
+      width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .carousel-btn {
+      background: #007b5e;
+      color: white;
+      border: none;
+      padding: 0.75rem 1.25rem;
+      font-size: 1.5rem;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: background 0.3s ease;
+    }
+
+    .carousel-btn:hover {
+      background: #005f47;
+    }
+
+    .progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 5px;
+      background: #007b5e;
+      width: 0%;
+      z-index: 999;
+    }
+
+    footer {
+      background: #333;
+      color: white;
+      text-align: center;
+      padding: 2rem;
+      margin-top: 3rem;
+      font-size: 1rem;
+    }
+  </style>
+
+
+<style>
+  .carousel {
+    --ratio: 6/10;           /* mude a proporção se quiser (ex.: 4/3, 1/1) */
+    --speed: 500ms;          /* velocidade da transição */
+    position: relative;
+    width: min(900px, 100%);
+    margin: 0 auto;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,.25);
+    background: #faf9f9;
+  }
+  .carousel-viewport {
+    aspect-ratio: var(--ratio);
+    overflow: hidden;
+  }
+  .carousel-track {
+    display: flex;
+    height: 100%;
+    transition: transform var(--speed) ease;
+    will-change: transform;
+  }
+  .carousel-slide {
+    min-width: 100%;
+    height: 100%;
+    position: relative;
+  }
+  .carousel-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* Botões (setas) */
+  .carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    background: rgba(247, 239, 239, 0.45);
+    color: #fff;
+    border: 0;
+    width: 44px; height: 44px;
+    border-radius: 999px;
+    display: grid; place-items: center;
+    cursor: pointer;
+    backdrop-filter: blur(2px);
+  }
+  .carousel-btn:hover { background: rgba(232, 222, 222, 0.65); }
+  .carousel-btn:focus-visible { outline: 3px solid #38bdf8; }
+  .carousel-btn.prev { left: 10px; }
+  .carousel-btn.next { right: 10px; }
+
+  /* Indicadores (bolinhas) */
+  .carousel-dots {
+    position: absolute;
+    left: 0; right: 0; bottom: 10px;
+    display: flex; gap: 8px; justify-content: center;
+    z-index: 2;
+  }
+  .carousel-dots button {
+    width: 10px; height: 10px; border-radius: 50%;
+    border: 0; background: rgba(255,255,255,.45);
+    cursor: pointer;
+  }
+  .carousel-dots button[aria-current="true"] { background: #fff; }
+</style>
+
+
+</head>
+<body>
+  <div class="progress-bar" id="progressBar"></div>
+  
+  <header data-aos="fade-down">
+    <div class="logo">
+      
+    </div>
+    <h1> </h1>
+    <p> </p>
+  </header>
+
+  <div class="carousel" id="myCarousel" aria-roledescription="carousel">
+    <button class="carousel-btn prev" aria-label="Slide anterior">‹</button>
+    <div class="carousel-viewport">
+      <div class="carousel-track">
+        <!-- Troque os src pelas suas imagens -->
+        <div class="carousel-slide"><img loading="lazy" src="./img/photo_2025-08-30_20-47-19.jpg" alt="Gabriel Menezes"></div>
+        <div class="carousel-slide"><img loading="lazy" src="./img/photo_2025-08-30_17-13-07.jpg" alt=" "></div>
+        <div class="carousel-slide"><img loading="lazy" src="./img/photo_2025-08-30_17-13-10.jpg" alt=" "></div>
+        <div class="carousel-slide"><img loading="lazy" src="./img/photo_2025-08-30_17-13-12.jpg" alt=" "></div>
+        <div class="carousel-slide"><img loading="lazy" src="./img/photo_2025-08-30_17-13-19.jpg" alt=" "></div>
+      </div>
+    </div>
+    <button class="carousel-btn next" aria-label="Próximo slide">›</button>
+    <div class="carousel-dots" aria-label="Seleção de slides"></div>
+  </div>
+
+  <section class="simulacao" data-aos="fade-up">
+  <p>Com a liberação do saque, você pode antecipar valores e usar para realizar sonhos, quitar dívidas ou investir no que realmente importa!"</p>
+    
+<p>✨ Benefícios destacados:</p>
+
+<p>✅ Dinheiro liberado de forma rápida e prática</p>
+
+<p>✅ Atendimento seguro e personalizado</p>
+
+<p>✅ Use seu FGTS para organizar sua vida financeira</p>
+
+
+<p>"Não deixe seu dinheiro parado!
+Clique no botão abaixo e fale agora mesmo no WhatsApp para entender como utilizar seu FGTS de forma inteligente e sem burocracia."</p>
+
+<p>"FGTS liberado é mais poder de escolha na sua mão. Aproveite!"</p>
+    <p id="resultado"></p>
+    <img src="./photo_2025-08-30_17-13-13.jpg" alt="Pessoa usando celular sorrindo" />
+    <a href="https://wa.me/5513996756517?text=Eu%20quero%20fazer%20uma%20simulação%20do%20FGTS" target="_blank" class="whatsapp-btn">💬 Fazer Simulação via WhatsApp</a>
+  </section>
+
+  <section class="como-funciona" data-aos="fade-up">
+    <h2>Como Funciona o Saque-Aniversário do FGTS?</h2>
+    <p>O Saque-Aniversário permite que você retire uma parte do seu FGTS todos os anos, no mês do seu aniversário. Ao optar por essa modalidade, você pode antecipar até 10 parcelas com taxas reduzidas e sem burocracia.</p>
+    <img src="./photo_2025-08-30_17-13-09.jpg" alt="Mão segurando dinheiro" />
+    <a href="https://wa.me/5513996756517?text=Eu%20quero%20fazer%20uma%20simulação%20do%20FGTS" target="_blank" class="whatsapp-btn">💬 Fazer Simulação via WhatsApp</a>
+  </section>
+
+  <section class="vantagens" data-aos="fade-up">
+    <h2>Vantagens da Antecipação do FGTS</h2>
+    <ul>
+      <li>✅ Dinheiro rápido na conta via PIX</li>
+      <li>✅ Sem consulta ao SPC/Serasa</li>
+      <li>✅ Taxas a partir de 1,79% ao mês</li>
+      <li>✅ Ideal para quem está negativado</li>
+      <li>✅ Até 10 parcelas antecipadas</li>
+    </ul>
+    <img src="./photo_2025-08-30_17-13-29.jpg" alt="Homem mostrando gráfico de crescimento" />
+    <a href="https://wa.me/5513996756517?text=Eu%20quero%20fazer%20uma%20simulação%20do%20FGTS" target="_blank" class="whatsapp-btn">💬 Fazer Simulação via WhatsApp</a>
+  </section>
+
+  <section class="passos" data-aos="fade-up">
+    <h2>Como Simular em 3 Passos</h2>
+    <div class="cards">
+      <div class="card">
+        <h3>1️⃣ Clique no botão do WhatsApp</h3>
+        <p>Você será redirecionado com uma mensagem automática.</p>
+      </div>
+      <div class="card">
+        <h3>2️⃣ Informe seus dados</h3>
+        <p>Nome, CPF e valor aproximado do saldo FGTS.</p>
+      </div>
+      <div class="card">
+        <h3>3️⃣ Receba a proposta</h3>
+        <p>Em poucos minutos, você saberá quanto pode antecipar.</p>
+      </div>
+    </div>
+    <a href="https://wa.me/5513996756517?text=Eu%20quero%20fazer%20uma%20simulação%20do%20FGTS" target="_blank" class="whatsapp-btn">💬 Fazer Simulação via WhatsApp</a>
+  </section>
+
+  <footer>
+    <p>© 2025 Juca | FGTS no seu bolso</p>
+  </footer>
+
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>AOS.init();</script>
+  <script>
+    function calcularSimulacao() {
+      const valor = parseFloat(document.getElementById('valor').value);
+      const parcelas = parseInt(document.getElementById('parcelas').value);
+      if (!isNaN(valor) && !isNaN(parcelas)) {
+        const taxa = 0.0179;
+        const total = valor * Math.pow(1 + taxa, parcelas);
+        document.getElementById('resultado').innerText = `Valor estimado a receber: R$ ${total.toFixed(2)}`;
+      }
+    }
+
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark-mode');
+    }
+
+    window.onscroll = function() {
+      const scrollTop = document.documentElement.scrollTop;
+      const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = (scrollTop / scrollHeight) * 100;
+      document.getElementById('progressBar').style.width = scrolled + '%';
+    };
+  </script>
+
+<script>
+  (function initCarousel(rootId, {interval=3500, pauseOnHover=true} = {}) {
+    const root = document.getElementById(rootId);
+    const track = root.querySelector('.carousel-track');
+    const slides = Array.from(root.querySelectorAll('.carousel-slide'));
+    const btnPrev = root.querySelector('.carousel-btn.prev');
+    const btnNext = root.querySelector('.carousel-btn.next');
+    const dotsWrap = root.querySelector('.carousel-dots');
+
+    let index = 0, timer = null, startX = 0, deltaX = 0;
+
+    // Criar dots
+    slides.forEach((_, i) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.setAttribute('aria-label', `Ir para o slide ${i+1}`);
+      b.addEventListener('click', () => goTo(i));
+      dotsWrap.appendChild(b);
+    });
+
+    function update() {
+      track.style.transform = `translateX(${-index * 100}%)`;
+      dotsWrap.querySelectorAll('button').forEach((d, i) => {
+        d.setAttribute('aria-current', i === index ? 'true' : 'false');
+      });
+    }
+    function next() { index = (index + 1) % slides.length; update(); }
+    function prev() { index = (index - 1 + slides.length) % slides.length; update(); }
+    function goTo(i){ index = i % slides.length; update(); }
+
+    // Autoplay
+    function start(){ stop(); timer = setInterval(next, interval); }
+    function stop(){ if(timer) clearInterval(timer); timer = null; }
+
+    btnNext.addEventListener('click', next);
+    btnPrev.addEventListener('click', prev);
+
+    // Pausar no hover
+    if (pauseOnHover) {
+      root.addEventListener('mouseenter', stop);
+      root.addEventListener('mouseleave', start);
+    }
+
+    // Teclado
+    root.tabIndex = 0;
+    root.addEventListener('keydown', (e)=>{
+      if (e.key === 'ArrowRight') next();
+      if (e.key === 'ArrowLeft') prev();
+    });
+
+    // Swipe (mobile)
+    track.addEventListener('touchstart', (e)=>{
+      startX = e.touches[0].clientX; deltaX = 0; stop();
+    }, {passive:true});
+    track.addEventListener('touchmove', (e)=>{
+      deltaX = e.touches[0].clientX - startX;
+    }, {passive:true});
+    track.addEventListener('touchend', ()=>{
+      if (Math.abs(deltaX) > 40) (deltaX < 0 ? next() : prev());
+      start();
+    });
+
+    // Responsivo: reajusta ao redimensionar (sem cálculos extras porque usamos %)
+    window.addEventListener('visibilitychange', ()=> {
+      if (document.hidden) stop(); else start();
+    });
+
+    // Iniciar
+    update(); start();
+  })('myCarousel', { interval: 3500, pauseOnHover: true });
+</script>
+
+</body>
+</html>
